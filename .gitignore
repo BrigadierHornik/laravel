@@ -1,0 +1,5 @@
+mysql
+
+.vscode
+.env
+docker-compose.yml
