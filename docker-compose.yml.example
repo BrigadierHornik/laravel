@@ -35,7 +35,7 @@ services:
     volumes:
       - ./mysql:/var/lib/mysql
   phpmyadmin:
-    image: "phpmyadmin:5.2.2"
+    build: ./image/myadmin/
     ports:
       - "8000:80"
     environment:
