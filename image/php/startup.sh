@@ -29,6 +29,15 @@ echo "Updating .env variables from Docker environment..."
 # Define the variables you want to update
 ENV_VARS="DB_CONNECTION DB_HOST DB_PORT DB_DATABASE DB_USERNAME DB_PASSWORD"
 
+if [ -f .env ]; then
+    echo ".env file found. Proceeding to update variables."
+else
+    echo ".env file not found. Creating a new one from .env.example."
+    cp .env.example .env
+    php artisan key:generate
+    echo "New .env file created and application key generated."
+fi
+
 # Loop through each variable and update it in the .env file
 for VAR in $ENV_VARS; do
     VALUE_FROM_ENV="${!VAR}" # Get the value
@@ -46,7 +55,7 @@ done
 echo ".env variables updated."
 
 # 5. Production optimization
-if [ "$APP_ENV" == "production" || "$APP_ENV" == "prod"]; then
+if [ "$APP_ENV" == "production" ] || [ "$APP_ENV" == "prod" ]; then
     echo "Production environment detected. Optimizing Laravel..."
     php artisan config:cache
     php artisan route:cache
@@ -64,11 +73,6 @@ fi
 echo "Running database migrations..."
 php artisan migrate --force
 echo "Database migrations complete."
-
-# 5. Optimize Laravel (Optional - Be cautious with caching config/routes)
-# Caching config means .env changes and Docker env vars won't be read until cache is cleared
-# Uncomment if you understand the implications and need the performance boost
-
 
 # 6. Fix Permissions (If needed, depends on your base image user)
 # If your web server/php-fpm runs as www-data, ensure it owns storage and bootstrap/cache
